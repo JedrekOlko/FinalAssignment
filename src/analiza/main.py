@@ -21,16 +21,21 @@ data_PKB['Country Name'] = data_PKB['Country Name'].str.upper()
 data_mieszkancy['Country Name'] = data_mieszkancy['Country Name'].str.upper()
 data_emisjaCO2['Country'] = data_emisjaCO2['Country'].str.upper()
 
+with open('saved_dictionary.pkl', 'rb') as f:
+    corec_dict = pickle.load(f)
+#print( corec_dict )
+
+#data_PKB['Country Name'].replace(corec_dict, inplace = True)
+#data_mieszkancy['Country Name'].replace(corec_dict, inplace = True)
+#data_emisjaCO2['Country'].replace(corec_dict, inplace = True)
 
 diff_pkb_mieszkancy = (set(data_PKB['Country Name']) | (set(data_mieszkancy['Country Name'])) ) - \
        (set(data_PKB['Country Name']) & (set(data_mieszkancy['Country Name']))  )
 diff_pkb_CO2 = (set(data_PKB['Country Name']) | (set(data_emisjaCO2['Country'])) ) - \
        (set(data_PKB['Country Name']) & (set(data_emisjaCO2['Country']))  )
-with open('saved_dictionary.pkl', 'rb') as f:
-    corec_dict = pickle.load(f)
-print( corec_dict )
 
-
+print( diff_pkb_mieszkancy )
+print( diff_pkb_CO2 )
 
 
 print( data_PKB.head() )
