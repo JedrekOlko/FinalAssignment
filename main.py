@@ -1,5 +1,6 @@
 import argparse
 import pandas as pd
+import pickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument('gdp', help='path to gdp csv')
@@ -15,6 +16,26 @@ data_emisjaCO2 = pd.read_csv(args.CO2emission)
 from_year = args.f
 to_year = args.t
 
+#zamienam nazwy krajow we wszystkich danych na pisane tylko duzymi literami
+data_PKB['Country Name'] = data_PKB['Country Name'].str.upper()
+data_mieszkancy['Country Name'] = data_mieszkancy['Country Name'].str.upper()
+data_emisjaCO2['Country'] = data_emisjaCO2['Country'].str.upper()
+
+
+diff_pkb_mieszkancy = (set(data_PKB['Country Name']) | (set(data_mieszkancy['Country Name'])) ) - \
+       (set(data_PKB['Country Name']) & (set(data_mieszkancy['Country Name']))  )
+diff_pkb_CO2 = (set(data_PKB['Country Name']) | (set(data_emisjaCO2['Country'])) ) - \
+       (set(data_PKB['Country Name']) & (set(data_emisjaCO2['Country']))  )
+with open('saved_dictionary.pkl', 'rb') as f:
+    corec_dict = pickle.load(f)
+print( corec_dict )
+
+
+
+
+print( data_PKB.head() )
+print( data_mieszkancy.head() )
+print( data_emisjaCO2.head() )
 print( data_PKB.shape )
 print( data_mieszkancy.shape )
 print( data_emisjaCO2.shape )
