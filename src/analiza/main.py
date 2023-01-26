@@ -1,13 +1,14 @@
 import argparse
 import pandas as pd
+import numpy as np
 import pickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument('gdp', help='path to gdp csv')
 parser.add_argument('population', help='path to population csv')
 parser.add_argument('CO2emission', help='path to CO2 emission csv')
-parser.add_argument('-f', type = int, help = 'from which year', default=1961)
-parser.add_argument('-t', type = int, help = 'to which year', default=2014)
+parser.add_argument('-f', type=int, help='from which year', default=1961)
+parser.add_argument('-t', type=int, help='to which year', default=2014)
 args = parser.parse_args()
 
 data_PKB = pd.read_csv(args.gdp, skiprows = 4)
@@ -21,26 +22,30 @@ data_PKB['Country Name'] = data_PKB['Country Name'].str.upper()
 data_mieszkancy['Country Name'] = data_mieszkancy['Country Name'].str.upper()
 data_emisjaCO2['Country'] = data_emisjaCO2['Country'].str.upper()
 
+#laduje slownik odpowiadajacych sobie krajow w roznych formatach
 with open('saved_dictionary.pkl', 'rb') as f:
     corec_dict = pickle.load(f)
-#print( corec_dict )
 
-#data_PKB['Country Name'].replace(corec_dict, inplace = True)
-#data_mieszkancy['Country Name'].replace(corec_dict, inplace = True)
-#data_emisjaCO2['Country'].replace(corec_dict, inplace = True)
+#ujednolicam format nazw krajow
+data_PKB['Country Name'].replace(corec_dict, inplace=True)
+data_mieszkancy['Country Name'].replace(corec_dict, inplace=True)
+data_emisjaCO2['Country'].replace(corec_dict, inplace=True)
 
-diff_pkb_mieszkancy = (set(data_PKB['Country Name']) | (set(data_mieszkancy['Country Name'])) ) - \
-       (set(data_PKB['Country Name']) & (set(data_mieszkancy['Country Name']))  )
-diff_pkb_CO2 = (set(data_PKB['Country Name']) | (set(data_emisjaCO2['Country'])) ) - \
-       (set(data_PKB['Country Name']) & (set(data_emisjaCO2['Country']))  )
+#zapisuje nazwy unikalnych nazw krajow po ujednoliceniu
+diff_names = (set(data_PKB['Country Name']) | (set(data_mieszkancy['Country Name'])) | (set(data_emisjaCO2['Country'])) ) - \
+       (set(data_PKB['Country Name']) & set(data_mieszkancy['Country Name']) & set(data_emisjaCO2['Country']) )
 
-print( diff_pkb_mieszkancy )
-print( diff_pkb_CO2 )
+#print( list( sorted(diff_names) ) )
+#pozbywam sie krajow niewystepujacych we wszsytkich 3 zbiorach danych
+print( data_PKB.shape )
+print( data_mieszkancy.shape )
+print( data_emisjaCO2.shape )
+
+data_PKB = data_PKB[~data_PKB['Country Name'].isin( diff_names)]
+data_mieszkancy = data_mieszkancy[~data_mieszkancy['Country Name'].isin(diff_names)]
+data_emisjaCO2 = data_emisjaCO2[~data_emisjaCO2['Country'].isin(diff_names)]
 
 
-print( data_PKB.head() )
-print( data_mieszkancy.head() )
-print( data_emisjaCO2.head() )
 print( data_PKB.shape )
 print( data_mieszkancy.shape )
 print( data_emisjaCO2.shape )
