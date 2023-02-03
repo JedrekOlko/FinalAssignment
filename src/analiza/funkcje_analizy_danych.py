@@ -15,5 +15,17 @@ def GDP_na_mieszkanca(data):
     return( pd.merge(res, data_top_GDP) )
 
 def zmiana_emisji(data):
-    10_ostatnich_lat = data['Year'].nlargest(10)
+    ostatnie_lata = sorted(set(data['Year']))[-10:]
+    data.dropna(subset=['Total', 'Population'], axis=0, inplace=True)
+    data['Average Emission'] = data['Total'] / data['Population']
+    data_diff_f = data[data['Year'] == ostatnie_lata[0]].rename(
+        columns={'Average Emission': 'Average Emission Start'})
+    data_diff_l = data[data['Year'] == ostatnie_lata[-1]].rename(
+        columns={'Average Emission': 'Average Emission End'})
+    data_diff_f = data_diff_f[data_diff_f['Country'].isin(data_diff_l['Country'])]
+    data_diff_l = data_diff_l[data_diff_l['Country'].isin(data_diff_f['Country'])]
+    data_diff = pd.merge(data_diff_f.drop(['Year', 'GDP', 'Population', 'Total'], axis=1),
+                         data_diff_l.drop(['Year', 'GDP', 'Population', 'Total'], axis=1))
+    data_diff['Average Diff'] = data_diff['Average Emission End'] - data_diff['Average Emission Start']
+    return(data_diff)
 
