@@ -44,15 +44,31 @@ data_mieszkancy = data_mieszkancy[~data_mieszkancy['Country Name'].isin(diff_nam
 data_emisjaCO2 = data_emisjaCO2[~data_emisjaCO2['Country'].isin(diff_names)]
 
 #tworze zbior lat wystepujacych we wszystkich zbiorach i z przedzialu [from_year, to_year]
-com_years = sorted( set( np.arange(from_year, to_year, 1, dtype='int').astype(str) ) & set(data_PKB.columns) \
-            & set(data_mieszkancy.columns) & set(data_emisjaCO2['Year'].astype(str)) )
+com_years = set( np.arange(from_year, to_year, 1, dtype='int').astype(str) ) & set(data_PKB.columns[4:].astype(str)) \
+            & set(data_mieszkancy.columns[4:].astype(str)) & set(data_emisjaCO2['Year'].astype(str))
 
-#scalam dane ze wzgledu na rok a potem ze wzgledu na nazwe kraju
+#licze nowe dataframe, zawierajace tylko wybrane lata
+data_PKB = data_PKB[ list(data_PKB.columns[:4]) + sorted( list(com_years) ) ]
+data_mieszkancy = data_mieszkancy[ list(data_PKB.columns[:4]) + sorted( list(com_years) ) ]
+data_emisjaCO2 = data_emisjaCO2[ data_emisjaCO2['Year'].isin( list(map(int, com_years)) ) ]
 
+#rozdzielam kolumny dotyczace lat w wiersze w tabelkach pkb i mieszkanyc
+data_PKB = pd.melt(data_PKB, id_vars = data_PKB.columns[:4], var_name='Year', value_name = 'GDP' )
+data_mieszkancy = pd.melt(data_mieszkancy, id_vars = data_mieszkancy.columns[:4], var_name='Year', value_name = 'Population' )
 
-print( data_PKB.shape )
-print( data_mieszkancy.shape )
-print( data_emisjaCO2.shape )
-print( data_PKB.head )
-print( data_mieszkancy.head )
-print( data_emisjaCO2.head )
+#scalam wszystkie df w jeden
+data_PKB['Year'] = data_PKB['Year'].astype(int)
+data_mieszkancy['Year'] = data_mieszkancy['Year'].astype(int)
+data_emisjaCO2['Year'] = data_emisjaCO2['Year'].astype(int)
+
+data_PKB.rename( columns = {'Country Name' : 'Country'}, inplace = True )
+data_mieszkancy.rename( columns = {'Country Name' : 'Country'}, inplace = True )
+
+data_final = pd.merge(data_PKB[ ['Country', 'Year', 'GDP'] ], data_mieszkancy[ ['Country', 'Year', 'Population'] ] )
+data_final = pd.merge(data_final, data_emisjaCO2[ ['Country', 'Year', 'Total'] ] )
+#print(data_final.head )
+
+#
+ostatnie_lata = sorted(set(data_final['Year']))[-10:]
+if( len(ostatnie_lata)<10 ):
+    print("BLAD")
