@@ -14,9 +14,6 @@ diff_pkb_mieszkancy = (set(data_PKB['Country Name']) | (set(data_mieszkancy['Cou
 diff_pkb_CO2 = (set(data_PKB['Country Name']) | (set(data_emisjaCO2['Country'])) ) - \
        (set(data_PKB['Country Name']) & (set(data_emisjaCO2['Country']))  )
 
-#print( diff_pkb_mieszkancy )
-#print( diff_pkb_CO2 )
-
 dict_replace = {
        'ANTIGUA & BARBUDA': 'ANTIGUA AND BARBUDA',
        'BAHAMAS': 'BAHAMAS, THE',
