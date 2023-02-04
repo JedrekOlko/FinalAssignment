@@ -67,19 +67,3 @@ data_mieszkancy.rename( columns = {'Country Name' : 'Country'}, inplace = True )
 data_final = pd.merge(data_PKB[ ['Country', 'Year', 'GDP'] ], data_mieszkancy[ ['Country', 'Year', 'Population'] ] )
 data_final = pd.merge(data_final, data_emisjaCO2[ ['Country', 'Year', 'Total'] ] )
 #print(data_final.head )
-
-#
-ostatnie_lata = sorted(set(data_final['Year']))[-10:]
-
-data_final.dropna(subset = ['Total', 'Population'], axis = 0, inplace=True)
-data_final['Average Emission'] = data_final['Total']/data_final['Population']
-data_diff_f = data_final[ data_final['Year'] == ostatnie_lata[0]  ].rename( columns = {'Average Emission': 'Average Emission Start'} )
-data_diff_l = data_final[ data_final['Year'] == ostatnie_lata[-1]  ].rename( columns = {'Average Emission': 'Average Emission End'} )
-data_diff_f = data_diff_f[ data_diff_f['Country'].isin( data_diff_l['Country'] ) ]
-data_diff_l = data_diff_l[ data_diff_l['Country'].isin( data_diff_f['Country'] ) ]
-data_diff = pd.merge(data_diff_f.drop(['Year', 'GDP', 'Population', 'Total'], axis=1), data_diff_l.drop(['Year', 'GDP', 'Population', 'Total'], axis=1))
-data_diff['Average Diff'] = data_diff['Average Emission End'] - data_diff['Average Emission Start']
-print( data_diff_l)
-print( data_diff_f)
-print( data_diff.sort_values(by = 'Average Diff', ascending=False) )
-print( data_diff.sort_values(by = 'Average Diff', ascending=True) )
