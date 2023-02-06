@@ -1,7 +1,13 @@
+import sys
 import pandas as pd
 import numpy as np
+import pickle
 
-def wczytaj_formatuj(data_PKB, data_mieszkancy, data_emisjaCO2, from_year, to_year):
+def wczytaj_formatuj(path_data_PKB, path_data_mieszkancy, path_data_emisjaCO2, from_year, to_year):
+    data_PKB = pd.read_csv(path_data_PKB, skiprows=4)
+    data_mieszkancy = pd.read_csv(path_data_mieszkancy, skiprows=3)
+    data_emisjaCO2 = pd.read_csv(path_data_emisjaCO2)
+
     data_PKB.drop('Unnamed: 66', axis=1, inplace=True)
     data_mieszkancy.drop('Unnamed: 66', axis=1, inplace=True)
 
@@ -30,7 +36,7 @@ def wczytaj_formatuj(data_PKB, data_mieszkancy, data_emisjaCO2, from_year, to_ye
     data_emisjaCO2 = data_emisjaCO2[~data_emisjaCO2['Country'].isin(diff_names)]
 
     # tworze zbior lat wystepujacych we wszystkich zbiorach i z przedzialu [from_year, to_year]
-    com_years = set(np.arange(from_year, to_year, 1, dtype='int').astype(str)) & set(data_PKB.columns[4:].astype(str)) \
+    com_years = set(np.arange(from_year, to_year+1, 1, dtype='int').astype(str)) & set(data_PKB.columns[4:].astype(str)) \
                 & set(data_mieszkancy.columns[4:].astype(str)) & set(data_emisjaCO2['Year'].astype(str))
 
     # licze nowe dataframe, zawierajace tylko wybrane lata
