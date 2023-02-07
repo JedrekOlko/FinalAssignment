@@ -1,9 +1,41 @@
-import sys
 import pandas as pd
 import numpy as np
-import pickle
 
 def wczytaj_formatuj(path_data_PKB, path_data_mieszkancy, path_data_emisjaCO2, from_year, to_year):
+    corec_dict = {
+        'ANTIGUA & BARBUDA': 'ANTIGUA AND BARBUDA',
+        'BAHAMAS': 'BAHAMAS, THE',
+        'BOSNIA & HERZEGOVINA': 'BOSNIA AND HERZEGOVINA',
+        'BRUNEI (DARUSSALAM)': 'BRUNEI DARUSSALAM',
+        'CABO VERDE': 'CAPE VERDE',
+        'CHINA': 'CHINA (MAINLAND)',
+        'CONGO': 'CONGO, DEM. REP.',
+        'COTE D IVOIRE': "COTE D'IVOIRE",
+        'CZECH REPUBLIC': 'CZECHIA',
+        'EGYPT': 'EGYPT, ARAB REP.',
+        'FAEROE ISLANDS': 'FAROE ISLANDS',
+        'FRANCE': 'FRANCE (INCLUDING MONACO)',
+        'GAMBIA': 'GAMBIA, THE',
+        'GUINEA BISSAU': 'GUINEA-BISSAU',
+        'HONG KONG SAR, CHINA': 'HONG KONG SPECIAL ADMINSTRATIVE REGION OF CHINA',
+        'IRAN, ISLAMIC REP.': 'ISLAMIC REPUBLIC OF IRAN',
+        'ITALY': 'ITALY (INCLUDING SAN MARINO)',
+        "KOREA, DEM. PEOPLE'S REP.": 'KOREA, REP.',
+        'KYRGYZ REPUBLIC': 'KYRGYZSTAN',
+        'LAO PDR': 'LAO PEOPLE S DEMOCRATIC REPUBLIC',
+        'MACAO SAR, CHINA': 'MACAU SPECIAL ADMINSTRATIVE REGION OF CHINA',
+        'MACEDONIA': 'NORTH MACEDONIA',
+        'MYANMAR': 'MYANMAR (FORMERLY BURMA)',
+        'SLOVAK REPUBLIC': 'SLOVAKIA',
+        'ST. KITTS AND NEVIS': 'ST. KITTS-NEVIS',
+        'ST. VINCENT & THE GRENADINES': 'ST. VINCENT AND THE GRENADINES',
+        'TURKEY': 'TURKIYE',
+        'UNITED STATES': 'UNITED STATES OF AMERICA',
+        'VENEZUELA': 'VENEZUELA, RB',
+        'VIET NAM': 'VIETNAM',
+        'YEMEN': 'YEMEN, REP.'
+    }
+
     data_PKB = pd.read_csv(path_data_PKB, skiprows=4)
     data_mieszkancy = pd.read_csv(path_data_mieszkancy, skiprows=3)
     data_emisjaCO2 = pd.read_csv(path_data_emisjaCO2)
@@ -15,10 +47,6 @@ def wczytaj_formatuj(path_data_PKB, path_data_mieszkancy, path_data_emisjaCO2, f
     data_PKB['Country Name'] = data_PKB['Country Name'].str.upper()
     data_mieszkancy['Country Name'] = data_mieszkancy['Country Name'].str.upper()
     data_emisjaCO2['Country'] = data_emisjaCO2['Country'].str.upper()
-
-    # laduje slownik odpowiadajacych sobie krajow w roznych formatach
-    with open('saved_dictionary.pkl', 'rb') as f:
-        corec_dict = pickle.load(f)
 
     # ujednolicam format nazw krajow
     data_PKB['Country Name'].replace(corec_dict, inplace=True)
