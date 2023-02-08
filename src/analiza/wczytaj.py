@@ -66,7 +66,7 @@ def wczytaj_formatuj(path_data_PKB, path_data_mieszkancy, path_data_emisjaCO2, f
     # tworze zbior lat wystepujacych we wszystkich zbiorach i z przedzialu [from_year, to_year]
     com_years = set(np.arange(from_year, to_year+1, 1, dtype='int').astype(str)) & set(data_PKB.columns[4:].astype(str)) \
                 & set(data_mieszkancy.columns[4:].astype(str)) & set(data_emisjaCO2['Year'].astype(str))
-    if( len(com_years)  ):
+    if( len(com_years)==0  ):
         print("Przedzial lat do analizy jest pusty")
     # licze nowe dataframe, zawierajace tylko wybrane lata
     data_PKB = data_PKB[list(data_PKB.columns[:4]) + sorted(list(com_years))]
